@@ -247,7 +247,7 @@ const Transactions = () => {
       <h1 className="text-2xl font-bold mb-4">Transactions Page</h1>
       {/* Customers Table */}
       <button
-        className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+        className="bg-green-500 text-white px-4 mb-4 py-2 rounded mt-4"
         onClick={openAddTransactionModal}
       >
         Add Transaction
