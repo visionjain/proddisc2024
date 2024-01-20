@@ -72,9 +72,10 @@ const Transactions = () => {
       updatedProducts[index].quantity = currentQuantity - 1;
     }
 
-    // Recalculate the final amount after discount for the updated product
     const discount = getDiscountForProduct(updatedProducts[index].product_code);
-    const finalAmountAfterDiscount = calculateFinalAmount(
+
+    // Recalculate the final amount after discount for the updated product
+    const finalAmountAfterDiscount = calculateFinalAmountAfterDiscount(
       updatedProducts[index].product_price,
       discount,
       updatedProducts[index].quantity
@@ -82,8 +83,14 @@ const Transactions = () => {
 
     updatedProducts[index].final_amount_after_discount = finalAmountAfterDiscount;
 
+    // Recalculate the final price for the updated product
+    const finalPrice = calculateFinalAmount(updatedProducts[index]);
+
+    updatedProducts[index].final_price = finalPrice;
+
     setAddedProducts(updatedProducts);
   };
+
 
 
 
@@ -120,10 +127,10 @@ const Transactions = () => {
         quantity: quantity, // Ensure quantity is properly set
         final_amount_after_discount: finalAmountAfterDiscount,
       };
-  
+
       // Update state correctly
       setAddedProducts((prevProducts) => [...prevProducts, productToAdd]);
-  
+
       // Clear selected product and reset quantity
       setSelectedProductToAdd(null);
       setQuantityToAdd(1);
@@ -154,7 +161,7 @@ const Transactions = () => {
         products: selectedProductsForAdd.map(product => ({
           ...product,
           discount_applied_percentage: getDiscountForProduct(product.product_code),
-          final_amount_after_discount: calculateFinalAmount(product),
+          final_amount_after_discount: calculateFinalAmountAfterDiscount(product), // Update this line
         })),
         total_transaction_amount: calculateTotalTransactionAmount(selectedProductsForAdd),
         final_amount_after_discount: calculateFinalAmountAfterDiscount(selectedProductsForAdd),
@@ -181,7 +188,6 @@ const Transactions = () => {
     const quantity = parseInt(product.quantity);
 
     if (isNaN(quantity)) {
-      // Handle the case where the quantity is not a valid number
       return 0;
     }
 
@@ -194,7 +200,7 @@ const Transactions = () => {
   // Function to calculate the final total price after applying discounts
   const calculateFinalTotalPrice = () => {
     return addedProducts.reduce((total, product) => {
-      return total + product.final_amount_after_discount;
+      return total + calculateFinalAmount(product);
     }, 0);
   };
 
@@ -215,6 +221,7 @@ const Transactions = () => {
   // Function to calculate the final amount after applying discount for the entire transaction
   // Function to calculate the final amount after applying discount for the entire transaction
   // Function to calculate the final amount after applying discount for a product
+  // Function to calculate the final amount after applying discount for a product
   const calculateFinalAmountAfterDiscount = (product) => {
     const discountPercent = getDiscountForProduct(product.product_code);
     const quantity = parseInt(product.quantity);
@@ -227,6 +234,7 @@ const Transactions = () => {
     const discountedAmount = product.product_price * (1 - discountPercent / 100);
     return discountedAmount * quantity;
   };
+
 
 
   if (isLoading) {
@@ -245,8 +253,8 @@ const Transactions = () => {
         Add Transaction
       </button>
       {isAddTransactionModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-2xl">
+         <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
+         <div className="bg-white p-6 rounded-lg shadow-xl max-w-2xl max-h-80vh overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Add Transaction</h2>
 
 
@@ -331,7 +339,7 @@ const Transactions = () => {
                     <th className="border border-gray-300 px-4 py-2">Unit</th>
                     <th className="border border-gray-300 px-4 py-2">Quantity</th>
                     <th className="border border-gray-300 px-4 py-2">Discount</th>
-                    <th className="border border-gray-300 px-4 py-2">Final Price</th>
+                    {/* <th className="border border-gray-300 px-4 py-2">Final Price</th> */}
                   </tr>
                 </thead>
                 <tbody>
@@ -361,9 +369,9 @@ const Transactions = () => {
                       <td className="border border-gray-300 px-4 py-2">
                         {getDiscountForProduct(product.product_code)}%
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      {/* <td className="border border-gray-300 px-4 py-2">
                         ₹{product.final_amount_after_discount.toFixed(2)}
-                      </td>
+                      </td> */}
                     </tr>
                   ))}
                 </tbody>
